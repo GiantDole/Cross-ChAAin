@@ -13,27 +13,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log: true,
   });
 
-  // Amount of ETH you want to send to the contract
+  // Amount of ETH you want to send to the contract as part of the deposit
   const amountToSend = ethers.utils.parseEther("1"); // Sending 1 ETH, adjust as needed
-
-  // Signer for the deploying account
-  const signer = ethers.provider.getSigner(accounts[0]);
-
-  // Sending ETH to the deployed contract
-  await signer.sendTransaction({
-    to: deployment.address,
-    value: amountToSend,
-  });
 
   // Interact with the deployed contract to call deposit() 
   const Paymaster = await ethers.getContractFactory("Paymaster");
   const paymasterInstance = Paymaster.attach(deployment.address);
 
-  await paymasterInstance.connect(signer).deposit({
+  // Call the deposit function and send ETH in the same transaction
+  await paymasterInstance.connect(ethers.provider.getSigner(accounts[0])).deposit({
     value: amountToSend
   });
 
-  console.log(`Sent ${ethers.utils.formatEther(amountToSend)} ETH to ${deployment.address} and called deposit()`);
+  console.log(`Sent ${ethers.utils.formatEther(amountToSend)} ETH to ${deployment.address} by calling deposit()`);
 };
 
 export default func;
+
