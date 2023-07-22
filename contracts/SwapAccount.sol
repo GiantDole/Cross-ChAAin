@@ -186,9 +186,9 @@ contract SwapAccount is
     function swapTokensForExactETH(
         address paymaster,
         uint256 ethPaymentRequired,
-        uint256 amountOut,
+        address tokenIn,
         uint256 amountInMax,
-        address tokenIn
+        uint256 amountOut
     ) external {
         //require(path.length >= 2, 'swapTokensForExactETH - invalid path');
         //address tokenIn = path[0];
@@ -229,10 +229,10 @@ contract SwapAccount is
     function swapTokensForExactTokens(
         address paymaster,
         uint256 ethPaymentRequired,
-        uint256 amountOut,
-        uint256 amountInMax,
         address tokenA,
-        address tokenB
+        uint256 amountInMax,
+        address tokenB,
+        uint256 amountOut
     ) external {
         address[] memory path = new address[](2);
         path[0] = tokenA;
@@ -278,9 +278,9 @@ contract SwapAccount is
     function bridgeToPolygonZKEVM(
         address paymaster,
         uint256 ethPaymentRequired,
-        address destination,
+        address token,
         uint256 amount,
-        address token
+        address destination
     ) external {
         uint256 ethAmount = 0;
         //uint256 tokensRequired =
