@@ -2464,6 +2464,11 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.1.tgz#709cfc4bbb3ca9f4460d60101f15dac6b7a2d5e4"
   integrity sha512-xQ6eUZl+RDyb/FiZe1h+U7qr/f4p/SrTSQcTPH2bjur3C5DbuW/zFgCU/b1P/xcIaEqJep+9ju4xDRi3rmChdQ==
 
+"@openzeppelin/contracts@^4.9.2":
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.9.2.tgz#1cb2d5e4d3360141a17dbc45094a8cad6aac16c1"
+  integrity sha512-mO+y6JaqXjWeMh9glYVzVu8HYPGknAAnWyxTRhGeckOruyXQMNnlcW6w/Dx9ftLeIQk6N+ZJFuVmTwF7lEIFrg==
+
 "@peculiar/asn1-ecc@^2.3.4":
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/@peculiar/asn1-ecc/-/asn1-ecc-2.3.4.tgz#f120091bde2ecd1e4f4691b46a2d18a74effce20"
@@ -4682,6 +4687,11 @@ accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.8:
   dependencies:
     mime-types "~2.1.34"
     negotiator "0.6.3"
+
+account-abstraction@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/account-abstraction/-/account-abstraction-0.2.4.tgz#9a393f3e188f5cc0d38e35c6198d526a8a6a5e00"
+  integrity sha512-ZHT6OgkL4IWaIudl082MdLaXQCO/GrIuLiIWDZcoch9wk06k0VeqT/JweYodWeouMOJat8v+3vhIN9U8M60fwA==
 
 acorn-import-assertions@^1.7.6:
   version "1.8.0"
