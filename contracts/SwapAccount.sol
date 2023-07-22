@@ -12,6 +12,7 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 import '@account-abstraction/contracts/core/BaseAccount.sol';
 
+import './interfaces/IAggregatorV3Interface.sol';
 import './interfaces/IUniswapV2Router02.sol';
 import './interfaces/IPolygonZkEVMBridge.sol';
 
@@ -22,6 +23,7 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     address immutable UNISWAPV2_ROUTER;
     address immutable POLYGONZKEVM_BRIDGE;
     address immutable WETH;
+    IAggregatorV3Interface immutable DATA_FEED;
 
     address public owner;
 
@@ -51,12 +53,14 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
         IEntryPoint anEntryPoint,
         address weth,
         address uniRouter,
-        address polygonZKEVMBridge
+        address polygonZKEVMBridge,
+        address dataFeedAddress
     ) {
         _entryPoint = anEntryPoint;
         UNISWAPV2_ROUTER = uniRouter;
         POLYGONZKEVM_BRIDGE = polygonZKEVMBridge;
         WETH = weth;
+        DATA_FEED = IAggregatorV3Interface(dataFeedAddress);
         _disableInitializers();
     }
 
@@ -171,6 +175,30 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     ) internal view override {
         (newImplementation);
         _onlyOwner();
+    }
+
+    function getRequiredTokAmountForGas_ChainlinkOracle(
+        uint256 requiredETHForGas
+    ) internal view returns (uint256) {
+        (, int answer, , , ) = DATA_FEED.latestRoundData();
+        return uint256(answer) * requiredETHForGas;
+    }
+
+    function getRequiredTokAmountForGas_UniswapOracle(
+        address tokenA,
+        uint256 requiredETHForGas
+    ) internal view returns (uint256) {
+        address[] memory path = new address[](2);
+        path[0] = WETH;
+        path[1] = tokenA;
+
+        IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
+
+        uint256[] memory amounts = router.getAmountsOut(
+            requiredETHForGas,
+            path
+        );
+        return amounts[1];
     }
 
     function swapTokensForExactETH(
