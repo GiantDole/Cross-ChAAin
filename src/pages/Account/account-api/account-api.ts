@@ -6,6 +6,7 @@ import { MessageSigningRequest } from '../../Background/redux-slices/signing';
 import { TransactionDetailsForUserOp } from '@account-abstraction/sdk/dist/src/TransactionDetailsForUserOp';
 import config from '../../../exconfig';
 import { SimpleAccountAPI } from '@account-abstraction/sdk';
+import { useDebugValue } from 'react';
 
 const FACTORY_ADDRESS = config.factory_address;
 
@@ -18,8 +19,7 @@ const FACTORY_ADDRESS = config.factory_address;
  */
 class SimpleAccountTrampolineAPI
   extends SimpleAccountAPI
-  implements AccountApiType
-{
+  implements AccountApiType {
   /**
    *
    * We create a new private key or use the one provided in the
@@ -67,12 +67,50 @@ class SimpleAccountTrampolineAPI
     info: TransactionDetailsForUserOp,
     preTransactionConfirmationContext?: any
   ): Promise<UserOperationStruct> {
+    console.log("createUnsignedUserOpWithContext: ", info)
+    const userOp = await this.createUnsignedUserOp(info);
+    console.log("userOp initial: ", userOp)
+
+    const preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas);
+    const verificationGasLimit = ethers.BigNumber.from(userOp.verificationGasLimit);
+    const callGasLimit = ethers.BigNumber.from(userOp.callGasLimit);
+
+    // Apply the formula
+    const prefund_native = preVerificationGas
+      .add(verificationGasLimit.mul(3))
+      .add(callGasLimit);
+
+    const prefund_native_hex = prefund_native.toHexString();
+
+
+    // Define the function signature in the ABI
+    const contractAbi = ["function test(address,uint256)"];
+
+    // Initialize a new Interface with the ABI
+    const iface = new ethers.utils.Interface(contractAbi);
+
+    // Define the function parameters
+    const params = ["0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa", prefund_native_hex];
+
+    // Use the `encodeFunctionData` method to create the calldata
+    const calldata = iface.encodeFunctionData("test", params);
+
+    console.log("calldata", calldata);  // Outputs the calldata for the function
+    userOp.callData = calldata;
+    console.log("userOp final: ", userOp)
     return {
-      ...(await this.createUnsignedUserOp(info)),
+      ...(userOp),
       paymasterAndData: preTransactionConfirmationContext?.paymasterAndData
         ? preTransactionConfirmationContext?.paymasterAndData
         : '0x',
     };
+  }
+
+  async createSignedUserOp(info: TransactionDetailsForUserOp): Promise<UserOperationStruct> {
+    const userOp = await super.createUnsignedUserOp(info);
+    const userOpCallData = await userOp.callData;
+    console.log("userOpCallData: ", userOpCallData);
+    return userOp
   }
 
   /**
@@ -84,6 +122,7 @@ class SimpleAccountTrampolineAPI
     userOp: UserOperationStruct,
     postTransactionConfirmationContext: any
   ): Promise<UserOperationStruct> => {
+    console.log("signUserOpWithContext: ", userOp)
     return this.signUserOp(userOp);
   };
 }
