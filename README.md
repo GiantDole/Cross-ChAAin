@@ -21,6 +21,29 @@ Cross-ChAAin is pushing the boundaries of blockchain operations, but our current
 
 Our acknowledgment of these limitations charts our path forward.
 
+
+### Our Work
+
+#### Adjusted Trampoline
+Trampoline only supported sending ether with a SCW. As we didn't have a front-end developer, this was the hardest to figure out. We had to extend it for our purposes:
+
+- Customizing the Front-End: We redefined the user interface to cater to our specific use-case requirements. Namely, we allow the user to choose the source currency and destination chain.
+- Integrating Custom Smart Contract Wallets: We extended the functionality to accommodate our own smart contract wallet and its functions.
+- Developing Custom User Operations (userOps): Our front-end is building userOps dependent on the context.
+
+#### Paymaster Logic
+The paymaster logic is somewhat reinventing the wheel. There are services like Biconomy that allow you to pay for transaction fees with ERC20. However, they have modified mempools that, e.g., allow for approvals in the validation function. We wanted to play around and see if we could achieve 
+
+- Payment Validation: Our logic ensures the paymaster receives its due compensation post-execution. We added checks to ensure the value of the token is adequate to meet transaction fees.
+- Risk Management: An additional 2% of ERC20 is accrued to offset any potential risks.
+
+#### Smart Contract Wallet 
+Our custom smart contract wallet provides:
+
+- ERC20 to ETH Swapping Capabilities: Users can seamlessly exchange their ERC20 tokens for ETH.
+- L2 Deposit Functionality: It's streamlined for users wishing to deposit into L2.
+#### Automation Scripts
+For a smooth onboarding and setup we streamlined the initialization. We've developed scripts that facilitate the setup, paving the way for jurors to quickly achieve our recommended starting configuration.
 ### MVP Solution
 
 ### Features

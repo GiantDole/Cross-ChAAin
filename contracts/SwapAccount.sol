@@ -75,10 +75,6 @@ contract SwapAccount is
         );
     }
 
-    function test(address test) external {
-        emit Test(test);
-    }
-
     /**
      * execute a transaction (called directly from owner, or by entryPoint)
      */
@@ -193,39 +189,30 @@ contract SwapAccount is
         uint256 amountOut,
         uint256 amountInMax,
         address tokenIn
-    ) external returns (uint256 amount) {
+    ) external {
         //require(path.length >= 2, 'swapTokensForExactETH - invalid path');
         //address tokenIn = path[0];
         address[] memory path = new address[](2);
         path[0] = tokenIn;
         path[1] = WETH;
 
-        uint256 tokensRequired = getRequiredTokAmountForGas_UniswapOracle(
-            tokenIn,
-            WETH,
-            ethPaymentRequired
+        uint256 tokensRequired = _approvePaymaster(
+            paymaster,
+            ethPaymentRequired,
+            tokenIn
         );
 
-        if (
-            IERC20(tokenIn).balanceOf(address(this)) + amountInMax >
-            tokensRequired
+        /*if (
+            IERC20(tokenIn).balanceOf(address(this)) <
+            tokensRequired + amountInMax
         ) {
             amountInMax =
                 IERC20(tokenIn).balanceOf(address(this)) -
                 tokensRequired;
-        }
-
-        IERC20(tokenIn).safeApprove(paymaster, tokensRequired);
+        }*/
 
         // Get uniswapV2 router
         IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
-
-        // if amount == type(uint256).max return balance of Proxy
-        amountInMax = IERC20(tokenIn).balanceOf(address(this));
-
-        // Approve token
-        //IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, 0);
-        IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, amountInMax);
 
         try
             router.swapTokensForExactETH(
@@ -235,13 +222,18 @@ contract SwapAccount is
                 address(this),
                 block.timestamp
             )
-        returns (uint256[] memory amounts) {
-            amount = amounts[0];
-        } catch {
+        {} catch {
             revert('swapTokensForExactETH');
         }
+
+        IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, tokensRequired);
     }
 
+    /// @notice bridges the specified amount of tokens or ETH to PolygonZKEVM
+    /// @param paymaster the paymaster that should be approved to transfer sufficient funds from this SCW
+    /// @param destination the destination address on PolygonZKEVM that should receive the tokens/ETH
+    /// @param amount the amount of tokens/ETH that should be transferred to PolygonZKEVM
+    /// @param token the token address that should be depositted to PolygonZKEVM. If the address is 0x0, this will transfer ETH instead.
     function bridgeToPolygonZKEVM(
         address paymaster,
         uint256 ethPaymentRequired,
@@ -250,11 +242,17 @@ contract SwapAccount is
         address token
     ) external {
         uint256 ethAmount = 0;
+        //uint256 tokensRequired =
+        _approvePaymaster(paymaster, ethPaymentRequired, token);
+
+        //if (IERC20(token).balanceOf(address(this)) < amount + tokensRequired) {
+        //    amount = IERC20(token).balanceOf(address(this)) - tokensRequired;
+        //}
 
         if (token != address(0x0)) {
             IERC20(token).safeApprove(POLYGONZKEVM_BRIDGE, amount);
         } else {
-            ethAmount = amount;
+            ethAmount = amount; //this shouldn't be done atm
         }
 
         IPolygonZkEVMBridge(POLYGONZKEVM_BRIDGE).bridgeAsset{value: ethAmount}(
@@ -263,7 +261,28 @@ contract SwapAccount is
             amount,
             token,
             true,
-            bytes('0')
+            ''
         );
+    }
+
+    /// @notice approves the paymaster for the required amount of specified ERC20 tokens
+    /// @param paymaster the address of the paymaster to approve
+    /// @param ethPaymentRequired the total cost of ETH for the entire transaction
+    /// @param tokenIn the ERC20 token used for payment
+    /// @return the amount of tokens required to be paid to the paymaster
+    function _approvePaymaster(
+        address paymaster,
+        uint256 ethPaymentRequired,
+        address tokenIn
+    ) internal returns (uint256) {
+        uint256 tokensRequired = getRequiredTokAmountForGas_UniswapOracle(
+            tokenIn,
+            WETH,
+            ethPaymentRequired
+        );
+
+        IERC20(tokenIn).safeApprove(paymaster, tokensRequired);
+
+        return tokensRequired;
     }
 }
