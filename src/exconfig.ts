@@ -4,7 +4,7 @@ import { EVMNetwork } from './pages/Background/types/network';
 export default {
   enablePasswordEncryption: false,
   showTransactionConfirmationScreen: true,
-  factory_address: '0xa6f8B5ECB00cddf5326c1C269f4B4444b50E077D',
+  factory_address: '0xcb9E5Df70EBa6513621D2941a93fBAaD191b73d4',
   stateVersion: '0.1',
   network: {
     chainID: '5',

@@ -123,11 +123,6 @@ contract SimpleAccount is
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        test(
-            address(0x8267cF9254734C6Eb452a7bb9AAF97B392258b21),
-            abi.decode(userOp.callData[24:56], (uint256))
-        );
-
         bytes32 hash = userOpHash.toEthSignedMessageHash();
         if (owner != hash.recover(userOp.signature))
             return SIG_VALIDATION_FAILED;
