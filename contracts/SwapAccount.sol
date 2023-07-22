@@ -202,12 +202,33 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function swapTokensForExactETH(
+        address paymaster,
+        uint256 ethPaymentRequired,
         uint256 amountOut,
         uint256 amountInMax,
-        address[] calldata path
+        address tokenIn
     ) external returns (uint256 amount) {
-        require(path.length >= 2, 'swapTokensForExactETH - invalid path');
-        address tokenIn = path[0];
+        //require(path.length >= 2, 'swapTokensForExactETH - invalid path');
+        //address tokenIn = path[0];
+        address[] memory path = new address[](2);
+        path[0] = tokenIn;
+        path[1] = WETH;
+
+        uint256 tokensRequired = getRequiredTokAmountForGas_UniswapOracle(
+            tokenIn,
+            ethPaymentRequired
+        );
+
+        if (
+            IERC20(tokenIn).balanceOf(address(this)) + amountInMax >
+            tokensRequired
+        ) {
+            amountInMax =
+                IERC20(tokenIn).balanceOf(address(this)) -
+                tokensRequired;
+        }
+
+        IERC20(tokenIn).safeApprove(paymaster, tokensRequired);
 
         // Get uniswapV2 router
         IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
@@ -216,7 +237,7 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
         amountInMax = IERC20(tokenIn).balanceOf(address(this));
 
         // Approve token
-        IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, 0);
+        //IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, 0);
         IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, amountInMax);
 
         try
