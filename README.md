@@ -25,16 +25,21 @@ Our acknowledgment of these limitations charts our path forward.
 ### Our Work
 
 #### Adjusted Trampoline
-Trampoline only supported sending ether with a SCW. As we didn't have a front-end developer, this was the hardest to figure out. We had to extend it for our purposes:
+We have extended Trampoline for our own purposes as follows:
 
 - Customizing the Front-End: We redefined the user interface to cater to our specific use-case requirements. Namely, we allow the user to choose the source currency and destination chain.
 - Integrating Custom Smart Contract Wallets: We extended the functionality to accommodate our own smart contract wallet and its functions.
-- Developing Custom User Operations (userOps): Our front-end is building userOps dependent on the context.
+- Contextual Custom User Operations (userOps): Our front-end is building userOps dependent on the context.
 
 #### Paymaster Logic
-The paymaster logic is somewhat reinventing the wheel. There are services like Biconomy that allow you to pay for transaction fees with ERC20. However, they have modified mempools that, e.g., allow for approvals in the validation function. We wanted to play around and see if we could achieve 
+Our paymaster logic is a novel approach to receive ERC20 tokens as payment. While we cache the ERC20 price to being able to calculate the required amount of tokens in the validate function, we also validate that the SCW is our implementation. This ensures that at the end of execution, there will be sufficient approved funds in the SCW to transfer to the paymaster:
 
-- Payment Validation: Our logic ensures the paymaster receives its due compensation post-execution. We added checks to ensure the value of the token is adequate to meet transaction fees.
+- Payment Validation: Our logic ensures the paymaster receives its due compensation post-execution. We added checks to ensure the value of the token is adequate to meet transaction fees. Particularly, we verify the following things:
+  1. The SCW's bytecode hash equals one of the whitelisted SCW's
+  2. The function called in the SCW is a whitelisted function
+  3. The paymaster address in the calldata is correct
+  4. The gas specified in the calldata is correct
+  5. Gas x cached price for the specified token (meaning its required amount) is smaller than the amount used (together with the validation in the SCW, this ensures that the execution will never revert)
 - Risk Management: An additional 2% of ERC20 is accrued to offset any potential risks.
 
 #### Smart Contract Wallet 
@@ -42,8 +47,9 @@ Our custom smart contract wallet provides:
 
 - ERC20 to ETH Swapping Capabilities: Users can seamlessly exchange their ERC20 tokens for ETH.
 - L2 Deposit Functionality: It's streamlined for users wishing to deposit into L2.
-#### Automation Scripts
-For a smooth onboarding and setup we streamlined the initialization. We've developed scripts that facilitate the setup, paving the way for jurors to quickly achieve our recommended starting configuration.
+#### Scripts and Tests
+For a smooth onboarding and setup we streamlined the initialization. We've developed scripts that facilitate the setup, paving the way for jurors to quickly achieve our recommended starting configuration.  
+Furthermore, we have written Foundry tests to test edge-cases of our implementation. It should be noted that this is not exhaustive. 
 ### MVP Solution
 
 ### Features
