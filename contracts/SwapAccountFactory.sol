@@ -15,13 +15,12 @@ import './SwapAccount.sol';
 contract SwapAccountFactory {
     SwapAccount public immutable accountImplementation;
 
-    constructor(IEntryPoint _entryPoint, address dataFeedAddress) {
+    constructor(IEntryPoint _entryPoint) {
         accountImplementation = new SwapAccount(
             _entryPoint,
             address(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6), //WETH address
             address(0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45), //UniswapV2
-            address(0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7), //PolygonZKEVM
-            dataFeedAddress
+            address(0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7) //PolygonZKEVM
         );
     }
 
