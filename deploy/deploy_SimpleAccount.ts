@@ -6,7 +6,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await hre.deployments.deploy('SimpleAccountFactory', {
     from: accounts[0],
     deterministicDeployment: true,
-    args: ['0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789'],
+    args: ['0x0576a174D229E3cFA37253523E645A78A0C91B57'],
     log: true,
   });
 };
