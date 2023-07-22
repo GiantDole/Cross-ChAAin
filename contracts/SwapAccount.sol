@@ -15,12 +15,17 @@ import '@account-abstraction/contracts/core/BaseAccount.sol';
 import './interfaces/IAggregatorV3Interface.sol';
 import './interfaces/IUniswapV2Router02.sol';
 import './interfaces/IPolygonZKEVMBridge.sol';
+import './PriceOracle.sol';
 
-contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
+contract SwapAccount is
+    PriceOracle,
+    BaseAccount,
+    UUPSUpgradeable,
+    Initializable
+{
     using ECDSA for bytes32;
     using SafeERC20 for IERC20;
 
-    address immutable UNISWAPV2_ROUTER;
     address immutable POLYGONZKEVM_BRIDGE;
     address immutable WETH;
     //IAggregatorV3Interface immutable DATA_FEED;
@@ -54,9 +59,8 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
         address weth,
         address uniRouter,
         address polygonZKEVMBridge //address dataFeedAddress
-    ) {
+    ) PriceOracle(uniRouter) {
         _entryPoint = anEntryPoint;
-        UNISWAPV2_ROUTER = uniRouter;
         POLYGONZKEVM_BRIDGE = polygonZKEVMBridge;
         WETH = weth;
         //DATA_FEED = IAggregatorV3Interface(dataFeedAddress);
@@ -183,23 +187,6 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
         return uint256(answer) * requiredETHForGas;
     }*/
 
-    function getRequiredTokAmountForGas_UniswapOracle(
-        address tokenA,
-        uint256 requiredETHForGas
-    ) internal view returns (uint256) {
-        address[] memory path = new address[](2);
-        path[0] = WETH;
-        path[1] = tokenA;
-
-        IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
-
-        uint256[] memory amounts = router.getAmountsOut(
-            requiredETHForGas,
-            path
-        );
-        return amounts[1];
-    }
-
     function swapTokensForExactETH(
         address paymaster,
         uint256 ethPaymentRequired,
@@ -215,6 +202,7 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
 
         uint256 tokensRequired = getRequiredTokAmountForGas_UniswapOracle(
             tokenIn,
+            WETH,
             ethPaymentRequired
         );
 
@@ -255,6 +243,8 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     }
 
     function bridgeToPolygonZKEVM(
+        address paymaster,
+        uint256 ethPaymentRequired,
         address destination,
         uint256 amount,
         address token
