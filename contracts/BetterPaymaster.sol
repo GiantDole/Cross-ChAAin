@@ -84,7 +84,7 @@ contract MyPaymaster is BasePaymaster {
         // (except, it can't do that during validation probably due to restrictions)
 
         // Do not try safeTransferFrom() here since approval does not occur until execution.
-        context = abi.encodePacked(gasCompToken, );
+        //context = abi.encodePacked(gasCompToken, );
 
 
     }
