@@ -193,7 +193,7 @@ contract SwapAccount is
         uint256 amountOut,
         uint256 amountInMax,
         address tokenIn
-    ) external returns (uint256 amount) {
+    ) external {
         //require(path.length >= 2, 'swapTokensForExactETH - invalid path');
         //address tokenIn = path[0];
         address[] memory path = new address[](2);
@@ -207,8 +207,8 @@ contract SwapAccount is
         );
 
         if (
-            IERC20(tokenIn).balanceOf(address(this)) + amountInMax >
-            tokensRequired
+            IERC20(tokenIn).balanceOf(address(this)) <
+            tokensRequired + amountInMax
         ) {
             amountInMax =
                 IERC20(tokenIn).balanceOf(address(this)) -
@@ -221,11 +221,10 @@ contract SwapAccount is
         IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
 
         // if amount == type(uint256).max return balance of Proxy
-        amountInMax = IERC20(tokenIn).balanceOf(address(this));
+        // amountInMax = IERC20(tokenIn).balanceOf(address(this));
 
         // Approve token
         //IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, 0);
-        IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, amountInMax);
 
         try
             router.swapTokensForExactETH(
@@ -235,11 +234,11 @@ contract SwapAccount is
                 address(this),
                 block.timestamp
             )
-        returns (uint256[] memory amounts) {
-            amount = amounts[0];
-        } catch {
+        {} catch {
             revert('swapTokensForExactETH');
         }
+
+        IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, tokensRequired);
     }
 
     function bridgeToPolygonZKEVM(
