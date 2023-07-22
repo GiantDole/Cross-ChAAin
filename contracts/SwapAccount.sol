@@ -12,13 +12,15 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 import '@account-abstraction/contracts/core/BaseAccount.sol';
 
-import './IUniswapV2Router02.sol';
+import './interfaces/IUniswapV2Router02.sol';
+import './interfaces/IPolygonZkEVMBridge.sol';
 
 contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     using ECDSA for bytes32;
     using SafeERC20 for IERC20;
 
     address immutable UNISWAPV2_ROUTER;
+    address immutable POLYGONZKEVM_BRIDGE;
     address immutable WETH;
 
     address public owner;
@@ -45,9 +47,15 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
 
-    constructor(IEntryPoint anEntryPoint, address weth, address uniRouter) {
+    constructor(
+        IEntryPoint anEntryPoint,
+        address weth,
+        address uniRouter,
+        address polygonZKEVMBridge
+    ) {
         _entryPoint = anEntryPoint;
         UNISWAPV2_ROUTER = uniRouter;
+        POLYGONZKEVM_BRIDGE = polygonZKEVMBridge;
         WETH = weth;
         _disableInitializers();
     }
@@ -196,5 +204,28 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
         } catch {
             revert('swapTokensForExactETH');
         }
+    }
+
+    function bridgeToPolygonZKEVM(
+        address destination,
+        uint256 amount,
+        address token
+    ) external {
+        uint256 ethAmount = 0;
+
+        if (token != address(0x0)) {
+            IERC20(token).safeApprove(POLYGONZKEVM_BRIDGE, amount);
+        } else {
+            ethAmount = amount;
+        }
+
+        IPolygonZkEVMBridge(POLYGONZKEVM_BRIDGE).bridgeAsset{value: ethAmount}(
+            0x1,
+            destination,
+            amount,
+            token,
+            true,
+            bytes('0')
+        );
     }
 }
