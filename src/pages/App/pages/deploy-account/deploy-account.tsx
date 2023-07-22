@@ -117,7 +117,7 @@ const DeployAccount = () => {
     const ethereum = getEthereumGlobal();
 
     try {
-      await ethereum.request({
+      const x = await ethereum.request({
         method: 'eth_requestAccounts',
       });
       await ethereum.request({
@@ -130,6 +130,7 @@ const DeployAccount = () => {
           },
         ],
       });
+      console.log(x);
 
       setDeployLoader(false);
       alert('success');
