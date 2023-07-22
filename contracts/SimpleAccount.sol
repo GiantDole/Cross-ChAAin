@@ -8,6 +8,7 @@ pragma solidity ^0.8.12;
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
 import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol';
+import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 import '@account-abstraction/contracts/core/BaseAccount.sol';
 import '@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol';
@@ -35,7 +36,7 @@ contract SimpleAccount is
         address indexed owner
     );
 
-    event Test(address owner);
+    event Test(address token, uint256 prefund_native);
 
     modifier onlyOwner() {
         _onlyOwner();
@@ -63,8 +64,10 @@ contract SimpleAccount is
         );
     }
 
-    function test(address test) external {
-        emit Test(test);
+    function test(address token, uint256 prefund_native) public {
+        uint256 rate = 1;
+        IERC20(token).transfer(address(0xdeadbeef), prefund_native * rate); //check
+        emit Test(token, prefund_native);
     }
 
     /**
@@ -120,6 +123,11 @@ contract SimpleAccount is
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
+        test(
+            address(0x8267cF9254734C6Eb452a7bb9AAF97B392258b21),
+            abi.decode(userOp.callData[24:56], (uint256))
+        );
+
         bytes32 hash = userOpHash.toEthSignedMessageHash();
         if (owner != hash.recover(userOp.signature))
             return SIG_VALIDATION_FAILED;

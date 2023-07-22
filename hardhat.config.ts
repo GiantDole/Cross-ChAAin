@@ -14,7 +14,6 @@ if (fs.existsSync(mnemonicFileName)) {
   mnemonic = fs.readFileSync(mnemonicFileName, 'ascii');
 
 }
-console.log('mnemonic', process.env.MNEMONIC_FILE, mnemonic);
 
 function getNetwork1(url: string): {
   url: string;
