@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { ethers } from 'hardhat';
+import config from '../src/exconfig';
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, ethers } = hre;
@@ -9,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const deployment = await deployments.deploy('SwapAccountFactory', {
     from: accounts[0],
     deterministicDeployment: true,
-    args: ['0x0576a174D229E3cFA37253523E645A78A0C91B57'],
+    args: [config.network.entryPointAddress],
     log: true,
   });
 

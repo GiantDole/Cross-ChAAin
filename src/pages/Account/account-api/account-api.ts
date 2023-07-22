@@ -1,5 +1,6 @@
 import { ethers, Wallet } from 'ethers';
 import { UserOperationStruct } from '@account-abstraction/contracts';
+import { BigNumber } from 'ethers';
 
 import { AccountApiParamsType, AccountApiType } from './types';
 import { MessageSigningRequest } from '../../Background/redux-slices/signing';
@@ -71,32 +72,47 @@ class SimpleAccountTrampolineAPI
     const userOp = await this.createUnsignedUserOp(info);
     console.log("userOp initial: ", userOp)
 
-    const preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas);
-    const verificationGasLimit = ethers.BigNumber.from(userOp.verificationGasLimit);
-    const callGasLimit = ethers.BigNumber.from(userOp.callGasLimit);
+    // const preVerificationGas = ethers.BigNumber.from(await userOp.preVerificationGas);
+    // const verificationGasLimit = ethers.BigNumber.from(userOp.verificationGasLimit);
+    // const callGasLimit = ethers.BigNumber.from(userOp.callGasLimit);
 
-    // Apply the formula
-    const prefund_native = preVerificationGas
-      .add(verificationGasLimit.mul(3))
-      .add(callGasLimit);
+    // // Apply the formula
+    // const prefund_native = preVerificationGas
+    //   .add(verificationGasLimit.mul(3))
+    //   .add(callGasLimit);
 
-    const prefund_native_hex = prefund_native.toHexString();
+    // const prefund_native_hex = prefund_native.toHexString();
 
 
-    // Define the function signature in the ABI
-    const contractAbi = ["function test(address,uint256)"];
+    // // Define the function signature in the ABI
+    // const contractAbi = ["function test(address,uint256)"];
 
-    // Initialize a new Interface with the ABI
-    const iface = new ethers.utils.Interface(contractAbi);
+    // // Initialize a new Interface with the ABI
+    // const iface = new ethers.utils.Interface(contractAbi);
 
-    // Define the function parameters
-    const params = ["0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa", prefund_native_hex];
+    // // Define the function parameters
+    // const params = ["0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa", prefund_native_hex];
 
-    // Use the `encodeFunctionData` method to create the calldata
-    const calldata = iface.encodeFunctionData("test", params);
+    // // Use the `encodeFunctionData` method to create the calldata
+    // const calldata = iface.encodeFunctionData("test", params);
 
-    console.log("calldata", calldata);  // Outputs the calldata for the function
-    userOp.callData = calldata;
+    // console.log("calldata", calldata);  // Outputs the calldata for the function
+    // userOp.callData = calldata;
+    // console.log("userOp final: ", userOp)
+    console.log("userOp gaslimit: ", await userOp.callGasLimit)
+    let increaseValue = BigNumber.from(1000); // adjust as necessary
+
+    // Ensure that userOp.callGasLimit is indeed a BigNumber
+    if (BigNumber.isBigNumber(userOp.callGasLimit)) {
+      userOp.callGasLimit = userOp.callGasLimit.add(increaseValue);
+    } else {
+      console.error('userOp.callGasLimit is not a BigNumber');
+    }
+
+    console.log("userOp gaslimit: ", await userOp.callGasLimit)
+
+    userOp.preVerificationGas = Number(await userOp.preVerificationGas) * 10;
+    console.log("userOp preVerificationGas: ", userOp.preVerificationGas)
     console.log("userOp final: ", userOp)
     return {
       ...(userOp),

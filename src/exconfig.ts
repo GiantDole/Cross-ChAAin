@@ -11,7 +11,7 @@ export default {
     family: 'EVM',
     name: 'Goerli',
     provider: 'https://goerli.infura.io/v3/1127cec9325243eb9b36471bdcff29d1',
-    entryPointAddress: '0x0576a174D229E3cFA37253523E645A78A0C91B57',
+    entryPointAddress: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
     bundler: 'https://api.blocknative.com/v1/goerli/bundler',
     baseAsset: {
       symbol: 'ETH',
