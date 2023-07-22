@@ -32,7 +32,7 @@ const TransferAssetButton = () => {
       >
         <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
           <SendRoundedIcon
-            onClick={() => navigate('/transfer-assets')}
+            onClick={() => navigate('/swap-assets')}
             sx={{ transform: 'rotate(-45deg)', ml: '4px', mb: '6px' }}
           />
         </Avatar>
