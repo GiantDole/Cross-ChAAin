@@ -14,7 +14,7 @@ import '@account-abstraction/contracts/core/BaseAccount.sol';
 
 import './interfaces/IAggregatorV3Interface.sol';
 import './interfaces/IUniswapV2Router02.sol';
-import './interfaces/IPolygonZkEVMBridge.sol';
+import './interfaces/IPolygonZKEVMBridge.sol';
 
 contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     using ECDSA for bytes32;
@@ -23,7 +23,7 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     address immutable UNISWAPV2_ROUTER;
     address immutable POLYGONZKEVM_BRIDGE;
     address immutable WETH;
-    IAggregatorV3Interface immutable DATA_FEED;
+    //IAggregatorV3Interface immutable DATA_FEED;
 
     address public owner;
 
@@ -53,14 +53,13 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
         IEntryPoint anEntryPoint,
         address weth,
         address uniRouter,
-        address polygonZKEVMBridge,
-        address dataFeedAddress
+        address polygonZKEVMBridge //address dataFeedAddress
     ) {
         _entryPoint = anEntryPoint;
         UNISWAPV2_ROUTER = uniRouter;
         POLYGONZKEVM_BRIDGE = polygonZKEVMBridge;
         WETH = weth;
-        DATA_FEED = IAggregatorV3Interface(dataFeedAddress);
+        //DATA_FEED = IAggregatorV3Interface(dataFeedAddress);
         _disableInitializers();
     }
 
@@ -177,12 +176,12 @@ contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
         _onlyOwner();
     }
 
-    function getRequiredTokAmountForGas_ChainlinkOracle(
+    /*function getRequiredTokAmountForGas_ChainlinkOracle(
         uint256 requiredETHForGas
     ) internal view returns (uint256) {
         (, int answer, , , ) = DATA_FEED.latestRoundData();
         return uint256(answer) * requiredETHForGas;
-    }
+    }*/
 
     function getRequiredTokAmountForGas_UniswapOracle(
         address tokenA,
