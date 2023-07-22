@@ -14,7 +14,7 @@ import '@account-abstraction/contracts/core/BaseAccount.sol';
 
 import './interfaces/IAggregatorV3Interface.sol';
 import './interfaces/IUniswapV2Router02.sol';
-import './interfaces/IPolygonZkEVMBridge.sol';
+import './interfaces/IPolygonZKEVMBridge.sol';
 
 contract SwapAccount is BaseAccount, UUPSUpgradeable, Initializable {
     using ECDSA for bytes32;
