@@ -8,11 +8,13 @@ import '@nomiclabs/hardhat-etherscan';
 
 const mnemonicFileName =
   process.env.MNEMONIC_FILE ??
-  `${process.env.HOME}/.secret/testnet-mnemonic.txt`;
+  `${process.env.HOME}/.secrets/testnet-mnemonic.txt`;
 let mnemonic = 'test '.repeat(11) + 'junk';
 if (fs.existsSync(mnemonicFileName)) {
   mnemonic = fs.readFileSync(mnemonicFileName, 'ascii');
+
 }
+console.log('mnemonic', process.env.MNEMONIC_FILE, mnemonic);
 
 function getNetwork1(url: string): {
   url: string;
@@ -42,6 +44,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     goerli: getNetwork('goerli'),
+    sepolia: getNetwork('sepolia'),
     mumbai: getNetwork('polygon-mumbai'),
   },
   etherscan: {

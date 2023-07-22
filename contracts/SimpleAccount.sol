@@ -10,7 +10,7 @@ import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol';
 
 import '@account-abstraction/contracts/core/BaseAccount.sol';
-import '@account-abstraction/constracts/samples/callback/TokenCallbackHandler.sol';
+import '@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol';
 
 /**
  * minimal account.

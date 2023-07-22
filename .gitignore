@@ -60,3 +60,4 @@ artifacts
 typechain-types
 deployments
 mnemonic.txt
+.secrets/testnet-mnemonic.txt
