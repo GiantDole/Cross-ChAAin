@@ -196,11 +196,8 @@ contract SwapAccount is
         path[0] = tokenIn;
         path[1] = WETH;
 
-        uint256 tokensRequired = _approvePaymaster(
-            paymaster,
-            ethPaymentRequired,
-            tokenIn
-        );
+        //uint256 tokensRequired =
+        _approvePaymaster(paymaster, ethPaymentRequired, tokenIn);
 
         /*if (
             IERC20(tokenIn).balanceOf(address(this)) <
@@ -214,6 +211,8 @@ contract SwapAccount is
         // Get uniswapV2 router
         IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
 
+        IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, amountInMax);
+
         try
             router.swapTokensForExactETH(
                 amountOut,
@@ -225,8 +224,50 @@ contract SwapAccount is
         {} catch {
             revert('swapTokensForExactETH');
         }
+    }
 
-        IERC20(tokenIn).safeApprove(UNISWAPV2_ROUTER, tokensRequired);
+    function swapTokensForExactTokens(
+        address paymaster,
+        uint256 ethPaymentRequired,
+        uint256 amountOut,
+        uint256 amountInMax,
+        address tokenA,
+        address tokenB
+    ) external {
+        address[] memory path = new address[](2);
+        path[0] = tokenA;
+        path[1] = tokenB;
+
+        //uint256 tokensAForGas =
+        _approvePaymaster(paymaster, ethPaymentRequired, tokenA);
+
+        /** 
+        if (
+            IERC20(tokenA).balanceOf(address(this)) <
+            amountInMax + tokensAForGas
+        ) {
+            amountInMax =
+                IERC20(tokenA).balanceOf(address(this)) -
+                tokensAForGas;
+        }*/
+
+        // --- Perform the swap token A VS token B ---
+
+        // Get uniswapV2 router
+        IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
+        // Approve token
+        IERC20(tokenA).approve(UNISWAPV2_ROUTER, amountInMax);
+        try
+            router.swapTokensForExactTokens(
+                amountOut,
+                amountInMax,
+                path,
+                address(this),
+                block.timestamp
+            )
+        {} catch {
+            revert('swapTokensForExactETH');
+        }
     }
 
     /// @notice bridges the specified amount of tokens or ETH to PolygonZKEVM
