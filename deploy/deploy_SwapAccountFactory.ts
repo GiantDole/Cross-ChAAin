@@ -14,7 +14,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
 
   // ERC20 interface
-  const ERC20 = await ethers.getContractFactory("ERC20");
+  /*const ERC20 = await ethers.getContractFactory("ERC20");
   const tokenAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
   const token = ERC20.attach(tokenAddress);
 
@@ -29,7 +29,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   // Transfer tokens to deployed contract
   await token.connect(ethers.provider.getSigner(accounts[0])).transfer(deployment.address, amountToTransfer);
-  console.log(`Transferred ${ethers.utils.formatUnits(amountToTransfer, 18)} tokens to ${deployment.address}`);
+  console.log(`Transferred ${ethers.utils.formatUnits(amountToTransfer, 18)} tokens to ${deployment.address}`);*/
 };
 
 export default func;
