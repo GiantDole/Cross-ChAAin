@@ -46,19 +46,23 @@ const SwapAsset = () => {
     setSourceToken(event.target.value as string);
   };
   const handleDestinationTokenChange = (event: SelectChangeEvent) => {
-    setSourceToken(event.target.value as string);
+    setDestinationToken(event.target.value as string);
   };
 
 
 
 
-  const sendEth = useCallback(async () => {
+  const execSwap = useCallback(async () => {
     // if (!ethers.utils.isAddress(toAddress)) {
     //   setError('Invalid to address');
     //   return;
     // }
     setLoader(true);
     setError('');
+    let dataVal = "0x";
+    if (sourceChain === "Ethereum" && destinationChain === "Polygon") {
+      dataVal = "0x01";
+    }
 
     const ethereum = getEthereumGlobal();
 
@@ -71,8 +75,8 @@ const SwapAsset = () => {
         {
           from: activeAccount,
           to: "0x35806F904851fc2e101Ef1B2B11E600219F45da8",
-          data: '0x',
-          value: ethers.utils.parseEther("0"),
+          data: dataVal,
+          value: ethers.utils.parseEther('0'),
         },
       ],
     });
@@ -109,10 +113,10 @@ const SwapAsset = () => {
           >
             <FormGroup sx={{ p: 2, pt: 4 }}>
               <FormControl sx={{ m: 1, width: 300 }}>
-                <InputLabel id="demo-simple-select-label">Source Chain</InputLabel>
+                <InputLabel id="sourceChain-label">Source Chain</InputLabel>
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+                  labelId="sourceChain-label"
+                  id="sourceChain"
                   value={sourceChain}
                   label="Source Chain"
                   onChange={handleSourceChainChange}
@@ -121,17 +125,44 @@ const SwapAsset = () => {
                   <MenuItem value={"Polygon"}>Polygon ZkEVM</MenuItem>
                 </Select>
               </FormControl>
+
               <FormControl sx={{ m: 1, width: 300 }}>
-                <InputLabel id="demo-simple-select-label">Source Token</InputLabel>
+                <InputLabel id="destinationChain-label">Destination Chain</InputLabel>
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+                  labelId="destinationChain-label"
+                  id="destinationChain"
+                  value={destinationChain}
+                  label="Destination Chain"
+                  onChange={handleDestinationChainChange}
+                >
+                  <MenuItem value={"Polygon"}>Polygon ZkEVM</MenuItem>
+                  <MenuItem value={"Ethereum"}>Ethereum</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ m: 1, width: 300 }}>
+                <InputLabel id="sourceToken-label">Source Token</InputLabel>
+                <Select
+                  labelId="sourceToken-label"
+                  id="sourceToken"
                   value={sourceToken}
                   label="Source Token"
                   onChange={handleSourceTokenChange}
                 >
-                  <MenuItem value={"Ethereum"}>WETH</MenuItem>
-                  <MenuItem value={"Polygon"}>UNI</MenuItem>
+                  <MenuItem value={"WETH"}>WETH</MenuItem>
+                  <MenuItem value={"UNI"}>UNI</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ m: 1, width: 300 }}>
+                <InputLabel id="destinationToken-label">Destination Token</InputLabel>
+                <Select
+                  labelId="destinationToken-label"
+                  id="destinationToken"
+                  value={destinationToken}
+                  label="Destination Token"
+                  onChange={handleDestinationTokenChange}
+                >
+                  <MenuItem value={"UNI"}>UNI</MenuItem>
+                  <MenuItem value={"WETH"}>WETH</MenuItem>
                 </Select>
               </FormControl>
               <FormControl sx={{ m: 1, width: 300 }} variant="outlined">
@@ -145,47 +176,14 @@ const SwapAsset = () => {
                   label="Value"
                 />
               </FormControl>
-              {/* <FormControl sx={{ m: 1, width: 300 }} variant="outlined">
-                <InputLabel htmlFor="password">Send to</InputLabel>
-                <OutlinedInput
-                  value={toAddress}
-                  onChange={(e) => setToAddress(e.target.value)}
-                  autoFocus
-                  label="Send to"
-                />
-              </FormControl> */}
-              <FormControl sx={{ m: 1, width: 300 }}>
-                <InputLabel id="demo-simple-select-label">Destination Chain</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={destinationChain}
-                  label="Destination Chain"
-                  onChange={handleDestinationChainChange}
-                >
-                  <MenuItem value={"Polygon"}>Polygon ZkEVM</MenuItem>
-                  <MenuItem value={"Ethereum"}>Ethereum</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl sx={{ m: 1, width: 300 }}>
-                <InputLabel id="demo-simple-select-label">Destination Token</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={destinationToken}
-                  label="Destination Token"
-                  onChange={handleDestinationTokenChange}
-                >
-                  <MenuItem value={"Polygon"}>UNI</MenuItem>
-                  <MenuItem value={"Ethereum"}>WETH</MenuItem>
-                </Select>
-              </FormControl>
+
+
               <Typography variant="body1" color="error">
                 {error}
               </Typography>
               <PrimaryButton
                 disabled={loader}
-                onClick={sendEth}
+                onClick={execSwap}
                 sx={{ mt: 4 }}
                 size="large"
                 variant="contained"
