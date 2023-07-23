@@ -275,14 +275,15 @@ contract SwapAccount is
         uint256 ethPaymentRequired,
         address tokenIn
     ) internal returns (uint256) {
-        uint256 tokensRequired = getRequiredTokAmountForGas_UniswapOracle(
+        /*uint256 tokensRequired = getRequiredTokAmountForGas_UniswapOracle(
             tokenIn,
             WETH,
             ethPaymentRequired
         );
 
-        IERC20(tokenIn).safeApprove(paymaster, tokensRequired);
+        IERC20(tokenIn).safeApprove(paymaster, tokensRequired);*/
 
-        return tokensRequired;
+        //return tokensRequired;
+        return 0;
     }
 }
