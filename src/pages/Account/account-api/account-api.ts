@@ -85,35 +85,41 @@ class SimpleAccountTrampolineAPI
 
 
     // Define the function signature in the ABI
-    const contractAbi = ["function swapTokensForExactETH(address ,uint256 ,uint256 ,uint256 ,address)"];
+    const contractAbi = ["function bridgeToPolygonZKEVM(address,uint256,address,uint256,address)"];
 
     // Initialize a new Interface with the ABI
     const iface = new ethers.utils.Interface(contractAbi);
 
     // Define the function parameters
-    const params = ["0x03E3B53C039e64Ee5e7963959152Eb192809c90A", prefund_native_hex, "30000000000000000", 1, "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"];
-
+    // const params = ["0x03E3B53C039e64Ee5e7963959152Eb192809c90A", "375135", "0x56e03E26bDa86c35B488D928c2869169f19Da1Bd", "30000000000000000", "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"];
+    const params = [
+      "0x03E3B53C039e64Ee5e7963959152Eb192809c90A", // paymaster
+      "400000", // ethPaymentRequired in wei (for 1 ether here)
+      "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+      "300000000", // amount (for 100 tokens here with 18 decimals)
+      "0x56e03E26bDa86c35B488D928c2869169f19Da1Bd" // destination
+    ];
     // Use the `encodeFunctionData` method to create the calldataeth_es
-    const calldata = iface.encodeFunctionData("swapTokensForExactETH", params);
+    const calldata = iface.encodeFunctionData("bridgeToPolygonZKEVM", params);
     console.log("params:", params)
     console.log("calldata", calldata);  // Outputs the calldata for the function
     userOp.callData = calldata;
     console.log("userOp final: ", userOp)
 
-    console.log("userOp gaslimit: ", await userOp.callGasLimit)
-    let increaseValue = BigNumber.from(1000); // adjust as necessary
+    // console.log("userOp gaslimit: ", await userOp.callGasLimit)
+    // let increaseValue = BigNumber.from(1000); // adjust as necessary
 
-    // Ensure that userOp.callGasLimit is indeed a BigNumber
-    if (BigNumber.isBigNumber(userOp.callGasLimit)) {
-      userOp.callGasLimit = userOp.callGasLimit.add(increaseValue);
-    } else {
-      console.error('userOp.callGasLimit is not a BigNumber');
-    }
+    // // Ensure that userOp.callGasLimit is indeed a BigNumber
+    // if (BigNumber.isBigNumber(userOp.callGasLimit)) {
+    //   userOp.callGasLimit = userOp.callGasLimit.add(increaseValue);
+    // } else {
+    //   console.error('userOp.callGasLimit is not a BigNumber');
+    // }
 
-    console.log("userOp gaslimit: ", await userOp.callGasLimit)
+    // console.log("userOp gaslimit: ", await userOp.callGasLimit)
 
-    userOp.preVerificationGas = Number(await userOp.preVerificationGas) * 10;
-    console.log("userOp preVerificationGas: ", userOp.preVerificationGas)
+    // userOp.preVerificationGas = Number(await userOp.preVerificationGas) * 10;
+    // console.log("userOp preVerificationGas: ", userOp.preVerificationGas)
     console.log("userOp final: ", userOp)
     return {
       ...(userOp),
