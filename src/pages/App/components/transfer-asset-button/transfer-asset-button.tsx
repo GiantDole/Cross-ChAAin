@@ -31,12 +31,12 @@ const TransferAssetButton = () => {
         sx={{ cursor: 'pointer' }}
       >
         <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-          <SendRoundedIcon
+          <SwapHorizIcon
             onClick={() => navigate('/swap-assets')}
             sx={{ transform: 'rotate(-45deg)', ml: '4px', mb: '6px' }}
           />
         </Avatar>
-        <Typography variant="button">Send</Typography>
+        <Typography variant="button">Swap</Typography>
       </Stack>
       <Tooltip title="Coming soon">
         <Stack
@@ -46,9 +46,9 @@ const TransferAssetButton = () => {
           sx={{ cursor: 'not-allowed', opacity: 0.5 }}
         >
           <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-            <SwapHorizIcon />
+            <SendRoundedIcon />
           </Avatar>
-          <Typography variant="button">Swap</Typography>
+          <Typography variant="button">Send</Typography>
         </Stack>
       </Tooltip>
     </Stack>

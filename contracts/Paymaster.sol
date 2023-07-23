@@ -57,13 +57,12 @@ contract Paymaster is BasePaymaster {
     }
 
     /// @dev Should consist of 4-byte discriminator followed by parameters of function
-    struct SwapCallData {
+    struct RequiredCallData {
         uint32 discrim;
         address paymaster;
         uint256 preGas;
         address tokenIn;
         uint256 amountIn;
-        address tokenOut;
     }
 
     /// @notice Cache rate of multiplication for each ERC-20 token address supported
@@ -159,6 +158,7 @@ contract Paymaster is BasePaymaster {
         returns (bytes memory context_bytes, uint256 validationResult)
     {
         (userOpHash);
+        return ('', 0);
 
         // 1) Verify smart contract wallet
         address extAddr = userOp.sender;
@@ -173,7 +173,10 @@ contract Paymaster is BasePaymaster {
         }
 
         // 2) Verify function called in smart contract wallet
-        SwapCallData memory data = abi.decode(userOp.callData, (SwapCallData));
+        RequiredCallData memory data = abi.decode(
+            userOp.callData,
+            (RequiredCallData)
+        );
         if (!isAllowedDiscrim[data.discrim]) {
             // Reject invalid function
             emit PaymasterValidationFailed(2);
