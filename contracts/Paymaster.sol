@@ -158,7 +158,6 @@ contract Paymaster is BasePaymaster {
         returns (bytes memory context_bytes, uint256 validationResult)
     {
         (userOpHash);
-        return ('', 0);
 
         // 1) Verify smart contract wallet
         address extAddr = userOp.sender;
