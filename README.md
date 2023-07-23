@@ -1,7 +1,17 @@
 # Cross-ChAAin
 ## A EthGlobal Paris 2023 Hackathon Project
 
-TL;DR: 
+Links:
+- Successful gasless deposit to L2: https://www.jiffyscan.xyz/bundle/0xac98340b90471fad381a1ac4b524eadb69eb2d698f77e2ff7ca394d18f11474b?network=goerli&pageNo=0&pageSize=10
+- Paymaster: 
+  - Contract https://github.com/GiantDole/Cross-ChAAin/blob/main/contracts/Paymaster.sol
+  - Deployed: https://www.jiffyscan.xyz/paymaster/0xad1437518fe6b2373db7256ac0f3d2dac7d9508f?network=goerli
+- Smart Contract Wallet (Goerli):
+  - Contract: https://github.com/GiantDole/Cross-ChAAin/blob/main/contracts/SwapAccount.sol
+  - Deployed: https://goerli.etherscan.io/address/0xe38918628500106ae7eebced3a29a1e926eb5cf3#internaltx
+- Smart Contract Wallet (PolygonZKEVM Testnet):
+  - Contract: https://github.com/GiantDole/Cross-ChAAin/blob/main/contracts/SwapAccount_PolygonZKEVM.sol
+  - Deployed: https://testnet-zkevm.polygonscan.com/address/0xe0b30aee4580b410fa05c7d5303f45d48236abdd#tokentxns
 ### Motivation
 In the dynamic world of cryptocurrencies, it's a common frustration: holding an ERC20 token but lacking the ETH to fund transactions. Whether it's the limitation of smart contract wallets or the cumbersome need to fund with ETH just to make a simple swap, these roadblocks can deter even the most seasoned crypto enthusiast. Imagine wanting to deposit your ERC20s into Layer 2 for cost-effective operations, only to be sidetracked by the need to first fund your wallet with ETH.
 
@@ -57,4 +67,5 @@ For a smooth onboarding and setup we streamlined the initialization. We've devel
 Furthermore, we have written Foundry tests to test edge-cases of our implementation. It should be noted that this is not exhaustive. 
 ### MVP Solution
 
-### Features
+We deployed our own paymaster and smart contract wallet on Ethereum. Additionally, we deployed a smart contract wallet on PolygonZKEVM. We could successfully bridge ERC-20 assets without gas in the smart contract wallet to PolygonZKEVM. 
+While we've implemented other features such as swapping ERC-20 to ETH and ERC-20 to ERC-20, we weren't able to run those functions. However, most of our efforts in this project are a proof of concept and at least 70% of the time were spent understanding Account Abstraction and ideating the solution to existing problems.
