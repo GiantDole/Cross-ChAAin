@@ -15,8 +15,8 @@ contract PriceOracle {
         uint256 requiredETHForGas
     ) internal view returns (uint256) {
         address[] memory path = new address[](2);
-        path[0] = tokenB;
-        path[1] = tokenA;
+        path[0] = tokenA;
+        path[1] = tokenB;
 
         IUniswapV2Router02 router = IUniswapV2Router02(UNISWAPV2_ROUTER);
 
