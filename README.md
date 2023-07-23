@@ -21,6 +21,11 @@ Cross-ChAAin is pushing the boundaries of blockchain operations, but our current
 
 Our acknowledgment of these limitations charts our path forward.
 
+### Existing Solutions
+
+There are two types of solutions we have identified that currently exist to achieve something similar. However, they are limited as described in the following:
+1. Private mempools: These are run by services such as Biconomy. However, they perform operations in the validate function of the paymaster that are not allowed within the standard ERC4337. This leads to limited participation and centralization of the bundler network operating on that private mempool. We wanted to implement an own solution that allows any bundler to process our userOps by adhering to the ERC4337 standard.
+2. [Tokenpaymaster](https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/TokenPaymaster.sol): While these contracts build the foundation of our solution, they are still griefable. There is no way to ensure in the validate function of the paymaster that there will be sufficient approved tokens by the end of executing the SCW function. While there is no way to implement a better generic paymaster, we have found a way to implement a application-specifc (Proof of Concept) paymaster that is not griefable. The paymaster is non-griefable because it verifies the bytecode of the SCW, ensuring that the execution will lead to sufficient approved tokens for the paymaster. Furthermore, it verifies the calldata and uses a cache to ensure that the tokens value is sufficient to cover the cost. The SCW then validates that the balance is high enough to cover the execution.
 
 ### Our Work
 
